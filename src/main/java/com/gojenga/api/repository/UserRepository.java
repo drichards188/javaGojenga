@@ -2,6 +2,7 @@ package com.gojenga.api.repository;
 
 
 import com.gojenga.api.models.User;
+import jakarta.transaction.Transactional;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository("userRepository")
 public interface UserRepository extends CrudRepository<User, Integer> {
+    @Transactional
     User findUserByName(String name);
-    Boolean deleteByName(String name);
+    @Transactional
+    Integer deleteByName(String name);
 }
