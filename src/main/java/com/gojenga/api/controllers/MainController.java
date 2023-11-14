@@ -69,7 +69,9 @@ public class MainController {
 
         try {
             if (name != null && password != null) {
-                User user = new User(name, password);
+                User user = new User();
+                user.setName(name);
+                user.setPassword(password);
 
                 userRepository.save(user);
                 return ResponseEntity.ok(true);

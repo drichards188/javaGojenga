@@ -8,10 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.util.Map;
@@ -23,19 +20,37 @@ public class AccountController {
     @Qualifier("accountRepository")
     private AccountRepository accountRepository;
 
+    @GetMapping("")
+    public ResponseEntity<Account> getAccount(@RequestParam String name) {
+        try {
+            Account account = accountRepository.findAccountByName(name);
+
+            if (account != null) {
+                return new ResponseEntity<>(account, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
     @PostMapping("")
     public ResponseEntity<Boolean> createAccount(@RequestBody Map<String, String> payload) throws SQLException {
         String name = payload.get("name");
         Float balance = Float.valueOf(payload.get("balance"));
 
 //        todo hash password
-
         try {
             if (name != null && balance != null) {
-                Account account = new Account(name, balance);
+                Account account = new Account();
+                account.setName(name);
+                account.setBalance(balance);
 
                 accountRepository.save(account);
-                return ResponseEntity.ok(true);
+                return new ResponseEntity<>(true, HttpStatus.OK);
 
             }
         } catch (Exception e) {
@@ -43,5 +58,45 @@ public class AccountController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+    }
+
+    @PutMapping("")
+    public ResponseEntity<Boolean> updateAccount(@RequestBody Map<String, String> payload) throws SQLException {
+        String name = payload.get("name");
+        Float balance = Float.valueOf(payload.get("balance"));
+
+        try {
+            Account account = accountRepository.findAccountByName(name);
+            account.setBalance(balance);
+
+            if (name != null && balance != null) {
+                accountRepository.save(account);
+                return new ResponseEntity<>(true, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+        return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @DeleteMapping("")
+    public ResponseEntity<Boolean> deleteAccount(@RequestParam String name) {
+        try {
+            if (name != null) {
+                Integer deleteResponse = accountRepository.deleteAccountByName(name);
+                if (deleteResponse > 0) {
+                    return new ResponseEntity<>(true, HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
+                }
+
+            } else {
+                return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

@@ -14,10 +14,6 @@ public class Account {
     private String name;
     private Float balance;
 
-    public Account(String name, Float balance) {
-        this.name = name;
-        this.balance = balance;
-    }
 
     public Integer getId() {
         return id;
