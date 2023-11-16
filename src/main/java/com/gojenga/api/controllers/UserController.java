@@ -1,7 +1,7 @@
 package com.gojenga.api.controllers;
 
-import com.gojenga.api.models.MyUser;
-import com.gojenga.api.repository.MyUserRepository;
+import com.gojenga.api.models.User;
+import com.gojenga.api.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -10,67 +10,46 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController // This means that this class is a Controller
-@RequestMapping(path = "/user") // This means URL's start with /demo (after Application path)
-public class userController {
+@RequestMapping(path = "api/user") // This means URL's start with /demo (after Application path)
+public class UserController {
     @Autowired
-    @Qualifier("myUserRepository")
-    private MyUserRepository myUserRepository;
-
-    @GetMapping(path = "/all")
-    public @ResponseBody Iterable<MyUser> getAllUsers() {
-        // This returns a JSON or XML with the users
-        return myUserRepository.findAll();
-    }
+    @Qualifier("userRepository")
+    private UserRepository userRepository;
 
     @GetMapping(path = "")
-    public ResponseEntity<MyUser> getUser(@RequestParam String name) {
-        MyUser myUser = myUserRepository.findUserByName(name);
+    public ResponseEntity<User> getUser(@RequestParam String username) {
+        try {
+           User user = userRepository.findUserByUsername(username);
 
-        if (!myUser.isEmpty()) {
-            return ResponseEntity.ok(myUser);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            if (user != null && !user.isEmpty()) {
+                User respUser = new User();
+                return ResponseEntity.ok(respUser);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
         }
 
-    }
-
-    @PostMapping("")
-    public ResponseEntity<Boolean> createUser(@RequestBody Map<String, String> payload) {
-        String name = payload.get("name");
-        String password = payload.get("password");
-
-//        todo hash password
-
-        try {
-            if (name != null && password != null) {
-                MyUser myUser = new MyUser();
-                myUser.setName(name);
-                myUser.setPassword(password);
-
-                myUserRepository.save(myUser);
-                return ResponseEntity.ok(true);
-
-            }
-        } catch (Exception e) {
+        catch (Exception e) {
             System.out.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+
     }
 
     @PutMapping("")
     public ResponseEntity<Boolean> updateAccount(@RequestBody Map<String, String> payload) throws Exception {
-        String name = payload.get("name");
+        String username = payload.get("username");
         String password = payload.get("password");
 
         try {
-            MyUser myUser = myUserRepository.findUserByName(name);
-            myUser.setPassword(password);
+            User user = userRepository.findUserByUsername(username);
+            user.setPassword(password);
 
-            if (name != null && password != null) {
-                myUserRepository.save(myUser);
+            if (username != null && password != null) {
+                userRepository.save(user);
                 return new ResponseEntity<>(true, HttpStatus.OK);
             }
         } catch (Exception e) {
@@ -85,7 +64,7 @@ public class userController {
         try {
             if (name != null) {
                 String whereStatement = String.format("name = '%s'", name);
-                Integer deleteResult = myUserRepository.deleteByName(name);
+                Integer deleteResult = userRepository.deleteUserByName(name);
                 if (deleteResult > 0) {
                     return ResponseEntity.ok(true);
                 } else {

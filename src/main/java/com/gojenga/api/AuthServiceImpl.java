@@ -34,18 +34,18 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String login(LoginDto loginDto) {
-    try {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                loginDto.getUsernameOrEmail(), loginDto.getPassword()));
+        try {
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                    loginDto.getUsernameOrEmail(), loginDto.getPassword()));
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String token = jwtTokenProvider.generateToken(authentication);
+            String token = jwtTokenProvider.generateToken(authentication);
 
-        return token;
-    } catch (Exception e) {
-        throw new RuntimeException(e);
-    }
+            return token;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
