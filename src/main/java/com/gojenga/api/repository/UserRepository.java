@@ -1,6 +1,6 @@
-package com.gojenga.api;
+package com.gojenga.api.repository;
 
-import com.gojenga.api.User;
+import com.gojenga.api.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

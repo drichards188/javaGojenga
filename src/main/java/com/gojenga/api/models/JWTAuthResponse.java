@@ -1,4 +1,4 @@
-package com.gojenga.api;
+package com.gojenga.api.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

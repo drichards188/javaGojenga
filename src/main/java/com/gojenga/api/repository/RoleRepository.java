@@ -1,9 +1,8 @@
-package com.gojenga.api;
+package com.gojenga.api.repository;
 
-import com.gojenga.api.Role;
+import com.gojenga.api.models.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Map;
 import java.util.Optional;
 
 public interface RoleRepository extends JpaRepository<Role, Long> {

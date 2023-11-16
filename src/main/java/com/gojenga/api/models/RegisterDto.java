@@ -1,4 +1,4 @@
-package com.gojenga.api;
+package com.gojenga.api.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,9 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginDto {
-    private String usernameOrEmail;
+public class RegisterDto {
+    private String username;
+    private String email;
+    private String name;
     private String password;
 }

@@ -1,8 +1,8 @@
 package com.gojenga.api;
 
+import com.gojenga.api.repository.UserRepository;
 import lombok.AllArgsConstructor;
-import com.gojenga.api.User;
-import com.gojenga.api.UserRepository;
+import com.gojenga.api.models.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
