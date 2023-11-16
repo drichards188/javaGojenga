@@ -37,7 +37,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String login(LoginDto loginDto) {
-
+    try {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 loginDto.getUsernameOrEmail(), loginDto.getPassword()));
 
@@ -46,5 +46,8 @@ public class AuthServiceImpl implements AuthService {
         String token = jwtTokenProvider.generateToken(authentication);
 
         return token;
+    } catch (Exception e) {
+        throw new RuntimeException(e);
+    }
     }
 }
