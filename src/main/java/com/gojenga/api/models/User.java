@@ -33,4 +33,12 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
     )
     private Set<Role> roles;
+
+    public Boolean isEmpty() {
+        if (this.id == null && this.name == null && this.username == null && this.email == null && this.password == null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

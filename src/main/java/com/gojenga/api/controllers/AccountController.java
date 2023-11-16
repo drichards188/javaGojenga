@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.util.Map;
 
 @RestController // This means that this class is a Controller
-@RequestMapping(path = "/account") // This means URL's start with /demo (after Application path)
+@RequestMapping(path = "api/account") // This means URL's start with /demo (after Application path)
 public class AccountController {
     @Autowired
     @Qualifier("accountRepository")
