@@ -1,7 +1,7 @@
 package com.gojenga.api.controllers;
 
-import com.gojenga.api.models.User;
-import com.gojenga.api.repository.UserRepository;
+import com.gojenga.api.models.MyUser;
+import com.gojenga.api.repository.MyUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -15,21 +15,21 @@ import java.util.Map;
 @RequestMapping(path = "/user") // This means URL's start with /demo (after Application path)
 public class userController {
     @Autowired
-    @Qualifier("userRepository")
-    private UserRepository userRepository;
+    @Qualifier("myUserRepository")
+    private MyUserRepository myUserRepository;
 
     @GetMapping(path = "/all")
-    public @ResponseBody Iterable<User> getAllUsers() {
+    public @ResponseBody Iterable<MyUser> getAllUsers() {
         // This returns a JSON or XML with the users
-        return userRepository.findAll();
+        return myUserRepository.findAll();
     }
 
     @GetMapping(path = "")
-    public ResponseEntity<User> getUser(@RequestParam String name) {
-        User user = userRepository.findUserByName(name);
+    public ResponseEntity<MyUser> getUser(@RequestParam String name) {
+        MyUser myUser = myUserRepository.findUserByName(name);
 
-        if (!user.isEmpty()) {
-            return ResponseEntity.ok(user);
+        if (!myUser.isEmpty()) {
+            return ResponseEntity.ok(myUser);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
@@ -45,11 +45,11 @@ public class userController {
 
         try {
             if (name != null && password != null) {
-                User user = new User();
-                user.setName(name);
-                user.setPassword(password);
+                MyUser myUser = new MyUser();
+                myUser.setName(name);
+                myUser.setPassword(password);
 
-                userRepository.save(user);
+                myUserRepository.save(myUser);
                 return ResponseEntity.ok(true);
 
             }
@@ -66,11 +66,11 @@ public class userController {
         String password = payload.get("password");
 
         try {
-            User user = userRepository.findUserByName(name);
-            user.setPassword(password);
+            MyUser myUser = myUserRepository.findUserByName(name);
+            myUser.setPassword(password);
 
             if (name != null && password != null) {
-                userRepository.save(user);
+                myUserRepository.save(myUser);
                 return new ResponseEntity<>(true, HttpStatus.OK);
             }
         } catch (Exception e) {
@@ -85,7 +85,7 @@ public class userController {
         try {
             if (name != null) {
                 String whereStatement = String.format("name = '%s'", name);
-                Integer deleteResult = userRepository.deleteByName(name);
+                Integer deleteResult = myUserRepository.deleteByName(name);
                 if (deleteResult > 0) {
                     return ResponseEntity.ok(true);
                 } else {

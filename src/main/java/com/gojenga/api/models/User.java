@@ -1,47 +1,36 @@
 package com.gojenga.api.models;
 
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import java.util.Set;
 
-@Entity // This tells Hibernate to make a table out of this class
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "users")
 public class User {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    private Integer id;
-
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String name;
+    @Column(nullable = false, unique = true)
+    private String username;
+    @Column(nullable = false, unique = true)
+    private String email;
+    @Column(nullable = false)
+    private String password;
 
-    private String password ;
-
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public boolean isEmpty() {
-        return this.name == null && this.password == null;
-    }
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
+    )
+    private Set<Role> roles;
 }

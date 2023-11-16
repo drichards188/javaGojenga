@@ -1,9 +1,7 @@
 package com.gojenga.api.controllers;
 
 import com.gojenga.api.models.Account;
-import com.gojenga.api.models.User;
 import com.gojenga.api.repository.AccountRepository;
-import com.gojenga.api.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
