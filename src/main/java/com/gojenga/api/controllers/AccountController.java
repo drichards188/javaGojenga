@@ -104,19 +104,26 @@ public class AccountController {
         String receiver = payload.get("receiver");
         Float amount = Float.valueOf(payload.get("amount"));
 
-//        try {
-//            Account account = accountRepository.findAccountByUsername(username);
-//            account.setBalance(balance);
-//
-//            if (username != null && balance != null) {
-//                accountRepository.save(account);
-//                return new ResponseEntity<>(true, HttpStatus.OK);
-//            }
-//        } catch (Exception e) {
-//            System.out.println(e.getMessage());
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-//        }
-        return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+        try {
+            Account senderAccount = accountRepository.findAccountByUsername(sender);
+            Float senderBalance = senderAccount.getBalance();
+            if (senderBalance < amount) {
+                throw new Exception("Insufficient funds");
+            }
+            Account receiverAccount = accountRepository.findAccountByUsername(receiver);
+            Float receiverBalance = receiverAccount.getBalance();
+
+            senderAccount.setBalance(senderBalance - amount);
+            receiverAccount.setBalance(receiverBalance + amount);
+
+            accountRepository.save(senderAccount);
+            accountRepository.save(receiverAccount);
+            return new ResponseEntity<>(true, HttpStatus.OK);
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     @DeleteMapping("")
