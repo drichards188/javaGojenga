@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
+import java.util.List;
 
 @Repository("calculationsRepository")
 public interface CalculationsRepository extends CrudRepository<Calculation, Integer> {
@@ -18,4 +19,6 @@ public interface CalculationsRepository extends CrudRepository<Calculation, Inte
     Calculation findBySymbolStartDateEndDate(@Param("value") String Symbol, Date StartDate, Date EndDate);
 
     Calculation findCalculationBySymbol(String Symbol);
+    @Query("SELECT p.symbol FROM Calculation p")
+    List<String> findAllNames();
 }

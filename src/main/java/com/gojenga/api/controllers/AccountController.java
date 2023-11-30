@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.util.Map;
 
 @RestController // This means that this class is a Controller
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping(path = "api/account") // This means URL's start with /demo (after Application path)
 public class AccountController {
     @Autowired
