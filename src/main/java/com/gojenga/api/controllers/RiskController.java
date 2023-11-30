@@ -34,8 +34,6 @@ public class RiskController {
             Date startDate = dateFormat.parse(dateString);
             Date endDate = dateFormat.parse(dateString2);
 
-
-//            Calculation calculation = calculationsRepository.findBySymbolStartDateEndDate("lulu", startDate, endDate);
             Calculation calculation = calculationsRepository.findCalculationBySymbol(symbol);
 
             if (calculation != null) {

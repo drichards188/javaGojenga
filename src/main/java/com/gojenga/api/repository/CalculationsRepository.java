@@ -13,11 +13,6 @@ import java.util.List;
 
 @Repository("calculationsRepository")
 public interface CalculationsRepository extends CrudRepository<Calculation, Integer> {
-//    Calculation findCalculationBySymbolAndStartDateAndEndDate(String symbol, Date startDate, Date endDate);
-
-    @Query(value = "SELECT * FROM calculations WHERE Symbol = 'lulu' AND StartDate = '2022-10-01' AND EndDate = '2023-10-01'", nativeQuery = true)
-    Calculation findBySymbolStartDateEndDate(@Param("value") String Symbol, Date StartDate, Date EndDate);
-
     Calculation findCalculationBySymbol(String Symbol);
     @Query("SELECT p.symbol FROM Calculation p")
     List<String> findAllNames();
