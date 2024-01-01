@@ -13,7 +13,8 @@ import java.util.List;
 
 @Repository("calculationsRepository")
 public interface CalculationsRepository extends CrudRepository<Calculation, Integer> {
-    Calculation findCalculationBySymbol(String Symbol);
+    Calculation findCalculationBySymbol(String symbol);
     @Query("SELECT p.symbol FROM Calculation p")
     List<String> findAllNames();
+
 }

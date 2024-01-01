@@ -2,9 +2,11 @@ package com.gojenga.api.controllers;
 
 import com.gojenga.api.handlers.DiversificationHandler;
 import com.gojenga.api.models.Calculation;
+import com.gojenga.api.models.SpdrCalculation;
 import com.gojenga.api.models.SpdrSymbol;
 import com.gojenga.api.repository.CalculationsRepository;
 import com.gojenga.api.repository.ExchangeRepository;
+import com.gojenga.api.repository.SpdrCalculationsRepository;
 import com.gojenga.api.repository.SpdrSectorsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,29 +28,38 @@ public class DiversificationController {
     @Qualifier("spdrSectorsRepository")
     private SpdrSectorsRepository spdrSectorsRepository;
 
+    @Autowired
+    @Qualifier("spdrCalculationsRepository")
+    private SpdrCalculationsRepository spdrCalculationsRepository;
 
     @GetMapping("")
-    public ResponseEntity<List<String>> getDiverseRec(@RequestParam String symbol) {
+    public ResponseEntity<List<SpdrSymbol>> getDiverseRec(@RequestParam String symbol) {
         try {
             SpdrSymbol symbolInfo = spdrSectorsRepository.findSpdrSectorsBySymbol(symbol);
 
             if (symbolInfo != null) {
+
+                SpdrCalculation result = spdrCalculationsRepository.findSpdrCalculationByBaseSymbolAndCorrSymbol("avy", "abt");
+
                 DiversificationHandler diversificationHandler = new DiversificationHandler();
                 String recommmendedSector = diversificationHandler.getMatchingSector(symbolInfo.getSector());
 
                 List<SpdrSymbol> sectorSymbols = spdrSectorsRepository.getAllBySector(recommmendedSector);
 
                 if (sectorSymbols.size() > 0) {
-                    ArrayList<String> symbols = new ArrayList<>();
+                    ArrayList<SpdrSymbol> symbols = new ArrayList<>();
                     int i = 0;
                     while (i < 3) {
                         int randomIndex = ThreadLocalRandom.current().nextInt(0, sectorSymbols.size());
 
                         SpdrSymbol selectedSymbol = sectorSymbols.get(randomIndex);
-                        symbols.add(selectedSymbol.getSymbol());
+
+                        symbols.add(selectedSymbol);
                         sectorSymbols.remove(randomIndex);
+
                         i++;
                     }
+
                     return new ResponseEntity<>(symbols, HttpStatus.OK);
                 }
 
