@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -33,45 +34,25 @@ public class DiversificationController {
     private SpdrCalculationsRepository spdrCalculationsRepository;
 
     @GetMapping("")
-    public ResponseEntity<List<SpdrSymbol>> getDiverseRec(@RequestParam String symbol) {
+    public ResponseEntity<List<SpdrCalculation>> getDiverseRec(@RequestParam String symbol) {
         try {
             SpdrSymbol symbolInfo = spdrSectorsRepository.findSpdrSectorsBySymbol(symbol);
 
             if (symbolInfo != null) {
 
-                SpdrCalculation result = spdrCalculationsRepository.findSpdrCalculationByBaseSymbolAndCorrSymbol("avy", "abt");
+                List<SpdrCalculation> allCalculations = spdrCalculationsRepository.getAllByBaseSymbol(symbol);
 
-                DiversificationHandler diversificationHandler = new DiversificationHandler();
-                String recommmendedSector = diversificationHandler.getMatchingSector(symbolInfo.getSector());
+                allCalculations.sort(Comparator.comparing(SpdrCalculation::getCorrelation));
 
-                List<SpdrSymbol> sectorSymbols = spdrSectorsRepository.getAllBySector(recommmendedSector);
-
-                if (sectorSymbols.size() > 0) {
-                    ArrayList<SpdrSymbol> symbols = new ArrayList<>();
-                    int i = 0;
-                    while (i < 3) {
-                        int randomIndex = ThreadLocalRandom.current().nextInt(0, sectorSymbols.size());
-
-                        SpdrSymbol selectedSymbol = sectorSymbols.get(randomIndex);
-
-                        symbols.add(selectedSymbol);
-                        sectorSymbols.remove(randomIndex);
-
-                        i++;
-                    }
-
-                    return new ResponseEntity<>(symbols, HttpStatus.OK);
-                }
-
+                return new ResponseEntity<>(allCalculations, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
-        } catch (Exception e) {
+        }
+         catch (Exception e) {
             System.out.println(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-
     }
 }
 
