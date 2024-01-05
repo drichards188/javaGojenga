@@ -9,13 +9,13 @@ import org.springframework.stereotype.Repository;
 
 @Repository("accountRepository")
 public interface AccountRepository extends CrudRepository<Account, Integer> {
-    Account findAccountByName(String name);
+    Account findAccountByUsername(String username);
+//
+//    @Transactional
+//    @Modifying
+//    @Query("update Account a set a.balance = ?2 where a.username = ?1")
+//    Integer updateAccountByUsername(String username, Float balance);
 
     @Transactional
-    @Modifying
-    @Query("update Account a set a.balance = ?2 where a.name = ?1")
-    Integer updateAccountByName(String name, Float balance);
-
-    @Transactional
-    Integer deleteAccountByName(String name);
+    Integer deleteAccountByUsername(String username);
 }

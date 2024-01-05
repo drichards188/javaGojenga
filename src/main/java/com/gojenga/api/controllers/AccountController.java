@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.util.Map;
 
 @RestController // This means that this class is a Controller
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping(path = "api/account") // This means URL's start with /demo (after Application path)
 public class AccountController {
     @Autowired
@@ -19,9 +20,9 @@ public class AccountController {
     private AccountRepository accountRepository;
 
     @GetMapping("")
-    public ResponseEntity<Account> getAccount(@RequestParam String name) {
+    public ResponseEntity<Account> getAccount(@RequestParam String username) {
         try {
-            Account account = accountRepository.findAccountByName(name);
+            Account account = accountRepository.findAccountByUsername(username);
 
             if (account != null) {
                 return new ResponseEntity<>(account, HttpStatus.OK);
@@ -37,14 +38,13 @@ public class AccountController {
 
     @PostMapping("")
     public ResponseEntity<Boolean> createAccount(@RequestBody Map<String, String> payload) throws SQLException {
-        String name = payload.get("name");
+        String username = payload.get("username");
         Float balance = Float.valueOf(payload.get("balance"));
 
-//        todo hash password
         try {
-            if (name != null && balance != null) {
+            if (username != null && balance != null) {
                 Account account = new Account();
-                account.setName(name);
+                account.setUsername(username);
                 account.setBalance(balance);
 
                 accountRepository.save(account);
@@ -60,14 +60,14 @@ public class AccountController {
 
     @PutMapping("")
     public ResponseEntity<Boolean> updateAccount(@RequestBody Map<String, String> payload) throws SQLException {
-        String name = payload.get("name");
+        String username = payload.get("username");
         Float balance = Float.valueOf(payload.get("balance"));
 
         try {
-            Account account = accountRepository.findAccountByName(name);
+            Account account = accountRepository.findAccountByUsername(username);
             account.setBalance(balance);
 
-            if (name != null && balance != null) {
+            if (username != null && balance != null) {
                 accountRepository.save(account);
                 return new ResponseEntity<>(true, HttpStatus.OK);
             }
@@ -78,11 +78,60 @@ public class AccountController {
         return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @DeleteMapping("")
-    public ResponseEntity<Boolean> deleteAccount(@RequestParam String name) {
+    @PutMapping("/deposit")
+    public ResponseEntity<Boolean> deposit(@RequestBody Map<String, String> payload) throws SQLException {
+        String username = payload.get("username");
+        Float amount = Float.valueOf(payload.get("amount"));
+
         try {
-            if (name != null) {
-                Integer deleteResponse = accountRepository.deleteAccountByName(name);
+            Account account = accountRepository.findAccountByUsername(username);
+            Float newBalance = amount + account.getBalance();
+            account.setBalance(newBalance);
+
+            if (username != null && amount != null) {
+                accountRepository.save(account);
+                return new ResponseEntity<>(true, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+        return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @PutMapping("/transaction")
+    public ResponseEntity<Boolean> transaction(@RequestBody Map<String, String> payload) throws SQLException {
+        String sender = payload.get("sender");
+        String receiver = payload.get("receiver");
+        Float amount = Float.valueOf(payload.get("amount"));
+
+        try {
+            Account senderAccount = accountRepository.findAccountByUsername(sender);
+            Float senderBalance = senderAccount.getBalance();
+            if (senderBalance < amount) {
+                throw new Exception("Insufficient funds");
+            }
+            Account receiverAccount = accountRepository.findAccountByUsername(receiver);
+            Float receiverBalance = receiverAccount.getBalance();
+
+            senderAccount.setBalance(senderBalance - amount);
+            receiverAccount.setBalance(receiverBalance + amount);
+
+            accountRepository.save(senderAccount);
+            accountRepository.save(receiverAccount);
+            return new ResponseEntity<>(true, HttpStatus.OK);
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @DeleteMapping("")
+    public ResponseEntity<Boolean> deleteAccount(@RequestParam String username) {
+        try {
+            if (username != null) {
+                Integer deleteResponse = accountRepository.deleteAccountByUsername(username);
                 if (deleteResponse > 0) {
                     return new ResponseEntity<>(true, HttpStatus.OK);
                 } else {
