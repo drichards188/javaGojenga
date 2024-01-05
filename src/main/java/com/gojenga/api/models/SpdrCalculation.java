@@ -19,6 +19,8 @@ public class SpdrCalculation {
     @EmbeddedId
     private SpdrCalcId id;
 
+    private String name;
+
     private Date date;
 
     private Float correlation;

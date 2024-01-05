@@ -40,9 +40,19 @@ public class DiversificationController {
 
             if (symbolInfo != null) {
 
-                List<SpdrCalculation> allCalculations = spdrCalculationsRepository.getAllByBaseSymbol(symbol);
+                List<SpdrCalculation> allCalculations = spdrCalculationsRepository.findAllByBaseSymbol(symbol);
 
                 allCalculations.sort(Comparator.comparing(SpdrCalculation::getCorrelation));
+
+                if (allCalculations.size() > 3) {
+                    allCalculations = allCalculations.subList(0, 3);
+                }
+
+                for (SpdrCalculation calc : allCalculations) {
+                    String lookupSymbol = calc.getId().getCorrSymbol();
+                    SpdrSymbol lookupResult = spdrSectorsRepository.findSpdrSectorsBySymbol(lookupSymbol);
+                    calc.setName(lookupResult.getName());
+                }
 
                 return new ResponseEntity<>(allCalculations, HttpStatus.OK);
             } else {
@@ -53,6 +63,20 @@ public class DiversificationController {
             System.out.println(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/symbols")
+    public ResponseEntity<List<String>> getCalcSymbols() {
+        try {
+            List<String> symbols = spdrCalculationsRepository.findDistinctBaseSymbols();
+
+            return new ResponseEntity<>(symbols, HttpStatus.OK);
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 }
 

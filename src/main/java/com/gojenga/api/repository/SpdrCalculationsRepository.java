@@ -12,6 +12,11 @@ import java.util.List;
 @Repository("spdrCalculationsRepository")
 
 public interface SpdrCalculationsRepository extends CrudRepository<SpdrCalculation, Integer> {
-    @Query("SELECT p FROM SpdrCalculation p")
-    List<SpdrCalculation> getAllByBaseSymbol(@Param("baseSymbol") String baseSymbol);
+
+    //    this is not pulling the right results
+    @Query("SELECT p FROM SpdrCalculation p WHERE p.id.baseSymbol = :baseSymbol")
+    List<SpdrCalculation> findAllByBaseSymbol(@Param("baseSymbol") String baseSymbol);
+
+    @Query("SELECT DISTINCT sc.id.baseSymbol FROM SpdrCalculation sc")
+    List<String> findDistinctBaseSymbols();
 }

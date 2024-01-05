@@ -2,10 +2,14 @@ package com.gojenga.api.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 
 @Embeddable
+@Getter
+@Setter
 public class SpdrCalcId implements Serializable {
 
     private String baseSymbol;  // corresponds to 'base_symbol' column
