@@ -10,4 +10,6 @@ import java.util.List;
 public interface SpdrSectorsRepository extends CrudRepository<SpdrSymbol, Integer> {
     SpdrSymbol findSpdrSectorsBySymbol(String Symbol);
     List<SpdrSymbol> getAllBySector(String sector);
+
+    SpdrSymbol findNameBySymbol(String symbol);
 }

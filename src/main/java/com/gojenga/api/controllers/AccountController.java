@@ -11,13 +11,16 @@ import org.springframework.web.bind.annotation.*;
 import java.sql.SQLException;
 import java.util.Map;
 
-@RestController // This means that this class is a Controller
+@RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
-@RequestMapping(path = "api/account") // This means URL's start with /demo (after Application path)
+@RequestMapping(path = "api/account")
 public class AccountController {
-    @Autowired
+    public AccountController(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
+    }
+
     @Qualifier("accountRepository")
-    private AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
 
     @GetMapping("")
     public ResponseEntity<Account> getAccount(@RequestParam String username) {

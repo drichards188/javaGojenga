@@ -19,17 +19,20 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-@RestController // This means that this class is a Controller
+@RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
-@RequestMapping(path = "api/risk") // This means URL's start with /demo (after Application path)
+@RequestMapping(path = "api/risk")
 public class RiskController {
-    @Autowired
-    @Qualifier("calculationsRepository")
-    private CalculationsRepository calculationsRepository;
+    public RiskController(CalculationsRepository calculationsRepository, ExchangeRepository exchangeRepository) {
+        this.calculationsRepository = calculationsRepository;
+        this.exchangeRepository = exchangeRepository;
+    }
 
-    @Autowired
+    @Qualifier("calculationsRepository")
+    private final CalculationsRepository calculationsRepository;
+
     @Qualifier("exchangeRepository")
-    private ExchangeRepository exchangeRepository;
+    private final ExchangeRepository exchangeRepository;
 
     @GetMapping("")
     public ResponseEntity<Calculation> getSharpeRatio(@RequestParam String symbol) {

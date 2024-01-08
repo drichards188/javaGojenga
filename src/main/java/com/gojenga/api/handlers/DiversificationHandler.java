@@ -26,14 +26,11 @@ public class DiversificationHandler {
         return matchingSector;
     }
 
-    public String getRecommendedSymbol(String sector) {
-        List<SpdrSymbol> sectorSymbols = spdrSectorsRepository.getAllBySector(sector);
+    public String getNameOfSymbol(String symbol) {
+        SpdrSymbol symbolInfo = spdrSectorsRepository.findNameBySymbol(symbol);
 
-        if (sectorSymbols.size() > 0) {
-            int randomIndex = ThreadLocalRandom.current().nextInt(0, sectorSymbols.size());
-
-            SpdrSymbol selectedSymbol = sectorSymbols.get(randomIndex);
-            return selectedSymbol.getSymbol();
+        if (symbolInfo != null) {
+            return symbolInfo.getName();
         } else {
             return "";
         }
