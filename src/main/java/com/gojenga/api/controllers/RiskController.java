@@ -37,13 +37,6 @@ public class RiskController {
     @GetMapping("")
     public ResponseEntity<Calculation> getSharpeRatio(@RequestParam String symbol) {
         try {
-            String dateString = "2020-10-01"; // Example date in MM/dd/yyyy format
-            String dateString2 = "2023-10-01";
-
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Date startDate = dateFormat.parse(dateString);
-            Date endDate = dateFormat.parse(dateString2);
-
             Calculation calculation = calculationsRepository.findCalculationBySymbol(symbol);
 
             if (calculation != null) {
