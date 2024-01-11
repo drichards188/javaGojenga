@@ -19,28 +19,24 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-@RestController // This means that this class is a Controller
+@RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
-@RequestMapping(path = "api/risk") // This means URL's start with /demo (after Application path)
+@RequestMapping(path = "api/risk")
 public class RiskController {
-    @Autowired
-    @Qualifier("calculationsRepository")
-    private CalculationsRepository calculationsRepository;
+    public RiskController(CalculationsRepository calculationsRepository, ExchangeRepository exchangeRepository) {
+        this.calculationsRepository = calculationsRepository;
+        this.exchangeRepository = exchangeRepository;
+    }
 
-    @Autowired
+    @Qualifier("calculationsRepository")
+    private final CalculationsRepository calculationsRepository;
+
     @Qualifier("exchangeRepository")
-    private ExchangeRepository exchangeRepository;
+    private final ExchangeRepository exchangeRepository;
 
     @GetMapping("")
     public ResponseEntity<Calculation> getSharpeRatio(@RequestParam String symbol) {
         try {
-            String dateString = "2020-10-01"; // Example date in MM/dd/yyyy format
-            String dateString2 = "2023-10-01";
-
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Date startDate = dateFormat.parse(dateString);
-            Date endDate = dateFormat.parse(dateString2);
-
             Calculation calculation = calculationsRepository.findCalculationBySymbol(symbol);
 
             if (calculation != null) {

@@ -2,7 +2,6 @@ package com.gojenga.api.controllers;
 
 import com.gojenga.api.models.User;
 import com.gojenga.api.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,15 +9,17 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.util.Map;
-import java.util.Optional;
 
-@RestController // This means that this class is a Controller
+@RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
-@RequestMapping(path = "api/user") // This means URL's start with /demo (after Application path)
+@RequestMapping(path = "api/user")
 public class UserController {
-    @Autowired
+    public UserController(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
     @Qualifier("userRepository")
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @GetMapping(path = "")
     public ResponseEntity<User> getUser(@RequestParam String username) {
@@ -64,7 +65,6 @@ public class UserController {
     public ResponseEntity<Boolean> deleteUser(@RequestParam(required = true) String name) throws SQLException {
         try {
             if (name != null) {
-                String whereStatement = String.format("name = '%s'", name);
                 Integer deleteResult = userRepository.deleteUserByName(name);
                 if (deleteResult > 0) {
                     return ResponseEntity.ok(true);

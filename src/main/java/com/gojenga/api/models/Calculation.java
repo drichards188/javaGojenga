@@ -16,18 +16,16 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "calculations")
+@Table(name = "sharpe_calc")
 public class Calculation {
 
     @Id
-    private Date startDate;
-    private Date endDate;
     private String symbol;
     @Column(nullable = false)
     private Float sharpeRatio;
 
     public Boolean isEmpty() {
-        if (this.startDate == null && this.endDate == null && this.symbol == null && this.sharpeRatio == null) {
+        if (this.symbol == null && this.sharpeRatio == null) {
             return true;
         } else {
             return false;

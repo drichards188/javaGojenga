@@ -21,17 +21,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-@RestController // This means that this class is a Controller
+@RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
-@RequestMapping(path = "api/diversification") // This means URL's start with /demo (after Application path)
+@RequestMapping(path = "api/diversification")
 public class DiversificationController {
-    @Autowired
-    @Qualifier("spdrSectorsRepository")
-    private SpdrSectorsRepository spdrSectorsRepository;
+    public DiversificationController(SpdrSectorsRepository spdrSectorsRepository, SpdrCalculationsRepository spdrCalculationsRepository) {
+        this.spdrSectorsRepository = spdrSectorsRepository;
+        this.spdrCalculationsRepository = spdrCalculationsRepository;
+    }
 
-    @Autowired
+    @Qualifier("spdrSectorsRepository")
+    private final SpdrSectorsRepository spdrSectorsRepository;
+
     @Qualifier("spdrCalculationsRepository")
-    private SpdrCalculationsRepository spdrCalculationsRepository;
+    private final SpdrCalculationsRepository spdrCalculationsRepository;
 
     @GetMapping("")
     public ResponseEntity<List<SpdrCalculation>> getDiverseRec(@RequestParam String symbol) {
