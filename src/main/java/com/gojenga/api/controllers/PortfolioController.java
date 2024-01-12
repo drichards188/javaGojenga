@@ -45,21 +45,31 @@ public class PortfolioController {
         try {
             Integer amount = Integer.parseInt(payload.get("amount"));
             String asset = payload.get("asset");
+            String orderType = payload.get("orderType");
 
-            Portfolio portfolio = new Portfolio(0,username, amount, asset);
+            Portfolio portfolio = new Portfolio(0, username, amount, asset);
 
             Portfolio foundPortfolio = portfolioRepository.findByUsernameAndAsset(username, asset);
 
             if (foundPortfolio == null) {
-                portfolioRepository.save(portfolio);
+                if (orderType.equals("buy")) {
+                    portfolioRepository.save(portfolio);
+                }
+
             } else {
-                foundPortfolio.setAmount(foundPortfolio.getAmount() + amount);
-                portfolioRepository.save(foundPortfolio);
+                if (orderType.equals("buy")) {
+                    foundPortfolio.setAmount(foundPortfolio.getAmount() + amount);
+                    portfolioRepository.save(foundPortfolio);
+                } else if (orderType.equals("sell")) {
+                    if (foundPortfolio.getAmount() - amount > 0) {
+                        foundPortfolio.setAmount(foundPortfolio.getAmount() - amount);
+                        portfolioRepository.save(foundPortfolio);
+                    }
+                }
             }
 
             return new ResponseEntity<>(true, HttpStatus.OK);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
