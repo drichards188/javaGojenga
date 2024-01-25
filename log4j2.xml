@@ -1,0 +1,14 @@
+<Configuration status="debug" name="javaGojenga" packages="">
+    <Appenders>
+        <File name="fout" fileName="javaGojenga.log" append="true">
+            <PatternLayout>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %m%n</Pattern>
+            </PatternLayout>
+        </File>
+    </Appenders>
+    <Loggers>
+        <Root level="error">
+            <AppenderRef ref="STDOUT"/>
+        </Root>
+    </Loggers>
+</Configuration>
